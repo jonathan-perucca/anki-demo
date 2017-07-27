@@ -2,55 +2,63 @@ package com.weekendesk.anki.domain;
 
 import org.junit.Test;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import static com.weekendesk.anki.domain.Box.GREEN;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class SessionTest {
 
-    private Session session = new Session(new HashMap<>());
+    private Session session = new Session( mock(Deck.class) );
 
-    /**
-     * 4 following tests could have been done with Parameterized unit test
-     */
     @Test
     public void should_add_card_to_greenBox() {
         Card cardToPlace = Card.builder().build();
 
-        session.place(cardToPlace, Box.GREEN);
+        session.place(cardToPlace, GREEN);
 
-        List<Card> greenCards = session.getCardsFrom(Box.GREEN);
+        List<Card> greenCards = session.getCardsFrom(GREEN);
         assertThat(greenCards).contains(cardToPlace);
     }
 
     @Test
-    public void should_add_card_to_redBox() {
-        Card cardToPlace = Card.builder().build();
+    public void should_remove_card_from_deck() {
+        Card cardToRemove = Card.builder().build();
+        setupSession(cardToRemove);
 
-        session.place(cardToPlace, Box.RED);
+        session.removeFromDeck(cardToRemove);
 
-        List<Card> redCards = session.getCardsFrom(Box.RED);
-        assertThat(redCards).contains(cardToPlace);
+        assertThat(session.getCardsFromDeck()).doesNotContain(cardToRemove);
+    }
+
+    private void setupSession(Card card) {
+        Set<Card> cards = new HashSet<>();
+        cards.add(card);
+        Deck deck = new Deck(cards);
+        session = new Session( deck );
     }
 
     @Test
-    public void should_add_card_to_orangeBox() {
-        Card cardToPlace = Card.builder().build();
+    public void should_return_true_when_all_cards_from_deck_are_in_green_box() {
+        Card card = Card.builder().build();
+        setupSession(card);
+        session.place(card, GREEN);
 
-        session.place(cardToPlace, Box.ORANGE);
+        boolean successful = session.isSuccessful();
 
-        List<Card> orangeCards = session.getCardsFrom(Box.ORANGE);
-        assertThat(orangeCards).contains(cardToPlace);
+        assertThat(successful).isTrue();
     }
 
     @Test
-    public void should_add_card_to_notPlayedBox() {
-        Card cardToPlace = Card.builder().build();
+    public void should_return_false_when_green_box_has_not_all_deck_cards() {
+        Card card = Card.builder().build();
+        setupSession(card);
 
-        session.place(cardToPlace, Box.NOT_PLAYED);
+        boolean successful = session.isSuccessful();
 
-        List<Card> notPlayedCards = session.getCardsFrom(Box.NOT_PLAYED);
-        assertThat(notPlayedCards).contains(cardToPlace);
+        assertThat(successful).isFalse();
     }
 }

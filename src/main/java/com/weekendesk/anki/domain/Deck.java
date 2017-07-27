@@ -18,7 +18,11 @@ public class Deck {
         return new Deck(new HashSet<>());
     }
 
-    public boolean addCard(Card card) {
-        return this.cards.add(card);
+    public void addCard(Card card) {
+        this.cards.add(card);
+    }
+
+    public void remove(Card card) {
+        this.cards.remove(card);
     }
 }

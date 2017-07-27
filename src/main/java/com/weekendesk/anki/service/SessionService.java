@@ -1,11 +1,14 @@
 package com.weekendesk.anki.service;
 
-import com.weekendesk.anki.domain.Deck;
-import com.weekendesk.anki.domain.Session;
+import com.weekendesk.anki.domain.*;
 import com.weekendesk.anki.importer.DeckImporter;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.weekendesk.anki.domain.Box.GREEN;
+import static com.weekendesk.anki.domain.Box.ORANGE;
 
 public class SessionService {
 
@@ -16,11 +19,37 @@ public class SessionService {
     }
 
     public Session start(File file) {
-        Session session = new Session(new HashMap<>());
-
         Deck deck = deckImporter.buildFrom(file);
-        deck.getCards().forEach(card -> session.place(card, card.getLastBox()));
 
-        return session;
+        return new Session(deck);
+    }
+
+    public void studies(Session session, Student student) {
+        List<Card> deckCards = session.getCardsFromDeck();
+        while(!deckCards.isEmpty()) {
+            List<Card> studyCards = new ArrayList<>(deckCards);
+            for (Card studyCard : studyCards) {
+                AnswerType answer = student.study(studyCard);
+
+                if (answer == AnswerType.PARTIAL) {
+                    session.place(studyCard, ORANGE);
+                    session.removeFromDeck(studyCard);
+                    deckCards.remove(studyCard);
+                }
+                if (answer == AnswerType.COMPLETE) {
+                    session.place(studyCard, GREEN);
+                    session.removeFromDeck(studyCard);
+                    deckCards.remove(studyCard);
+                }
+            }
+        }
+        if(session.isSuccessful()) {
+            // just for demo
+            System.out.println("Congratulations");
+        }
+    }
+
+    public void stop(Session session) {
+        // TODO : feature : update file for history
     }
 }
