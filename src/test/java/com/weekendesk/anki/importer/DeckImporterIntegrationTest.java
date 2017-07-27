@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.weekendesk.anki.domain.Box.NOT_PLAYED;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -54,14 +55,17 @@ public class DeckImporterIntegrationTest {
                 Card.builder()
                         .question("What enzyme breaks down sugars mouth and digestive tract?")
                         .answer("Amylase")
+                        .lastBox(NOT_PLAYED)
                         .build(),
                 Card.builder()
                         .question("How is dietary cholesterol transported to target tissues?")
                         .answer("In chylomicrons")
+                        .lastBox(NOT_PLAYED)
                         .build(),
                 Card.builder()
                         .question("What is the glucose transporter in the brain and what are its properties?")
                         .answer("GLUT-1 transports glucose across blood-brain barrier, GLUT-3 transports glucose into neurons.  Both are high-affinity")
+                        .lastBox(NOT_PLAYED)
                         .build()
         ));
     }

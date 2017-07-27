@@ -1,5 +1,6 @@
 package com.weekendesk.anki.importer;
 
+import com.weekendesk.anki.domain.Box;
 import com.weekendesk.anki.domain.Card;
 import com.weekendesk.anki.domain.Deck;
 
@@ -31,6 +32,7 @@ public class DeckImporter {
         return Card.builder()
                 .question(lineParts[0])
                 .answer(lineParts[1])
+                .lastBox( Box.valueOf(lineParts[2]) )
                 .build();
     }
 
